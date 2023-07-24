@@ -9,8 +9,13 @@
 #include "ViewProjection.h"
 #include "WorldTransform.h"
 #include <memory>
+#include <vector>
 
+#include "DebugCamera.h"
 #include "Player.h"
+#include "Skydome.h"
+#include "Ground.h"
+#include "FollowCamera.h"
 
 /// <summary>
 /// ゲームシーン
@@ -53,9 +58,22 @@ private: // メンバ変数
 
 	// 3Dモデルデータ
 	std::unique_ptr<Model> model_ = nullptr;
+	std::unique_ptr<Model> modelSkydome_ = nullptr;
+	std::unique_ptr<Model> modelGround_ = nullptr;
+	std::vector<Model> modelFighter_;
+	std::unique_ptr<Model> modelFighterBody_;
+	std::unique_ptr<Model> modelFighterHead_;
+	std::unique_ptr<Model> modelFighterL_arm_;
+	std::unique_ptr<Model> modelFighterR_arm_;
 
 	// ビュープロジェクション
 	ViewProjection viewProjection_; 
+
+	// デバッグカメラ有効
+	bool isDebugCameraActive_ = false;
+
+	// デバッグカメラ
+	std::unique_ptr<DebugCamera> debugCamera_ = nullptr;
 
 	/// <summary>
 	/// ゲームシーン用
@@ -63,7 +81,14 @@ private: // メンバ変数
 	// 自キャラ
 	std::unique_ptr<Player> player_;
 	
-	
+	// 天球
+	std::unique_ptr<Skydome> skydome_;
+
+	// 地面
+	std::unique_ptr<Ground> ground_;
+
+	// 追従カメラ
+	std::unique_ptr<FollowCamera> followCamera_;
 	
 	/// </summary>
 };

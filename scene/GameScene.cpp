@@ -13,22 +13,91 @@ void GameScene::Initialize() {
 	audio_ = Audio::GetInstance();
 
 	// ファイル名を指定してテクスチャを読み込む
-	textureHandle_ = TextureManager::Load("kamata.ico");
+	//textureHandle_ = TextureManager::Load("kamata.ico");
 
 	// 3Dモデルデータの生成
-	model_.reset(Model::Create());
+	modelFighterBody_.reset(Model::CreateFromOBJ("float_Body", true));
+	modelFighterHead_.reset(Model::CreateFromOBJ("float_Head", true));
+	modelFighterL_arm_.reset(Model::CreateFromOBJ("float_L_arm", true));
+	modelFighterR_arm_.reset(Model::CreateFromOBJ("float_R_arm", true));
+	modelSkydome_.reset(Model::CreateFromOBJ("skydome", true));
+	modelGround_.reset(Model::CreateFromOBJ("Ground", true));
 
 	// ビュープロジェクションの初期化
 	viewProjection_.Initialize();
 
+	// デバッグカメラの生成
+	debugCamera_ = std::make_unique<DebugCamera>(1280, 720);
+
+
 	// 自キャラの生成
 	player_ = std::make_unique<Player>();
 	// 自キャラの初期化
-	player_->Initialize(model_.get(), textureHandle_);
+	player_->Initialize(
+	    modelFighterBody_.get(), modelFighterHead_.get(), modelFighterL_arm_.get(),
+	    modelFighterR_arm_.get());
+
+	// 天球の生成
+	skydome_ = std::make_unique<Skydome>();
+	skydome_->Initialize(modelSkydome_.get());
+
+	// 地面の生成
+	ground_ = std::make_unique<Ground>();
+	ground_->Initialize(modelGround_.get());
+
+	// 追従カメラの生成
+	followCamera_ = std::make_unique<FollowCamera>();
+	followCamera_->Initialize(viewProjection_);
+	// 自キャラのワールドトランスフォームを追従カメラにセット
+	followCamera_->SetTarget(&player_->GetWorldTransform());
+
+	player_->SetViewProjection(followCamera_->GetViewProjection());
+
 
 }
 
-void GameScene::Update() {}
+void GameScene::Update() {
+
+	// プレイヤーの更新
+	player_->Update();
+
+	// 追従カメラの更新
+	followCamera_->Update();
+
+	viewProjection_.matView = followCamera_->GetViewProjection()->matView;
+	viewProjection_.matProjection = followCamera_->GetViewProjection()->matProjection;
+
+
+	#ifdef _DEBUG
+	if (input_->TriggerKey(DIK_Q)) {
+		if (isDebugCameraActive_ == false) {
+			isDebugCameraActive_ = true;
+		} else {
+			isDebugCameraActive_ = false;
+		}
+	}
+#endif // _DEBUG
+	// カメラの処理
+	if (isDebugCameraActive_ == true) {
+		// デバッグカメラの更新
+		debugCamera_->Update();
+		viewProjection_.matView = debugCamera_->GetViewProjection().matView;
+		viewProjection_.matProjection = debugCamera_->GetViewProjection().matProjection;
+		// ビュープロジェクション行列の転送
+		viewProjection_.TransferMatrix();
+	} else {
+		//railCamera_->Update(/*&viewProjection_*/);
+
+		//viewProjection_.matView = railCamera_->GetViewProjection().matView;
+		//viewProjection_.matProjection = railCamera_->GetViewProjection().matProjection;
+
+		// ビュープロジェクション行列の転送
+		viewProjection_.TransferMatrix();
+		
+	}
+
+
+}
 
 void GameScene::Draw() {
 
@@ -56,6 +125,12 @@ void GameScene::Draw() {
 	/// <summary>
 	/// ここに3Dオブジェクトの描画処理を追加できる
 	
+	// 天球の描画
+	skydome_->Draw(viewProjection_);
+	
+	// 地面の描画
+	ground_->Draw(viewProjection_);
+
 	// 自キャラの描画
 	player_->Draw(viewProjection_);
 	
