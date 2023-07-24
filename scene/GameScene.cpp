@@ -29,7 +29,6 @@ void GameScene::Initialize() {
 	// デバッグカメラの生成
 	debugCamera_ = std::make_unique<DebugCamera>(1280, 720);
 
-
 	// 自キャラの生成
 	player_ = std::make_unique<Player>();
 	// 自キャラの初期化
