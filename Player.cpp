@@ -227,6 +227,7 @@ void Player::UpdateFloatingGimmick() {
 	worldTransformBody_.translation_.y = std::sin(floatingParameter_) * amplitude;
 	worldTransformL_arm_.rotation_.x = std::sin(floatingParameter_) * (amplitude / 2.0f);
 	worldTransformR_arm_.rotation_.x = std::sin(floatingParameter_) * (amplitude / 2.0f);
+
 	ImGui::Begin("Player");
 	ImGui::SliderFloat3("Head Translation", &worldTransformHead_.translation_.x, -100.0f, 100.0f);
 	ImGui::SliderFloat3("ArmL Trasnlation", &worldTransformL_arm_.translation_.x, -100.0f, 100.0f);
