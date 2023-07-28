@@ -16,6 +16,7 @@
 #include "Skydome.h"
 #include "Ground.h"
 #include "FollowCamera.h"
+#include "Enemy.h"
 
 /// <summary>
 /// ゲームシーン
@@ -66,6 +67,10 @@ private: // メンバ変数
 	std::unique_ptr<Model> modelFighterL_arm_;
 	std::unique_ptr<Model> modelFighterR_arm_;
 
+	std::unique_ptr<Model> modelNeedleBody_;
+	std::unique_ptr<Model> modelNeedleL_arm_;
+	std::unique_ptr<Model> modelNeedleR_arm_;
+
 	// ビュープロジェクション
 	ViewProjection viewProjection_; 
 
@@ -80,6 +85,9 @@ private: // メンバ変数
 	
 	// 自キャラ
 	std::unique_ptr<Player> player_;
+
+	// 敵キャラ
+	std::unique_ptr<Enemy> enemy_;
 	
 	// 天球
 	std::unique_ptr<Skydome> skydome_;

@@ -16,11 +16,20 @@ void GameScene::Initialize() {
 	//textureHandle_ = TextureManager::Load("kamata.ico");
 
 	// 3Dモデルデータの生成
+	
+	// プレイヤー
 	modelFighterBody_.reset(Model::CreateFromOBJ("float_Body", true));
 	modelFighterHead_.reset(Model::CreateFromOBJ("float_Head", true));
 	modelFighterL_arm_.reset(Model::CreateFromOBJ("float_L_arm", true));
 	modelFighterR_arm_.reset(Model::CreateFromOBJ("float_R_arm", true));
+
+	// 敵
+	modelNeedleBody_.reset(Model::CreateFromOBJ("needle_Body", true));
+	modelNeedleL_arm_.reset(Model::CreateFromOBJ("needle_L_arm", true));
+	modelNeedleR_arm_.reset(Model::CreateFromOBJ("needle_R_arm", true));
+
 	modelSkydome_.reset(Model::CreateFromOBJ("skydome", true));
+
 	modelGround_.reset(Model::CreateFromOBJ("Ground", true));
 
 	// ビュープロジェクションの初期化
@@ -31,10 +40,22 @@ void GameScene::Initialize() {
 
 	// 自キャラの生成
 	player_ = std::make_unique<Player>();
-	// 自キャラの初期化
-	player_->Initialize(
+	std::vector<Model*> playerModels = {
 	    modelFighterBody_.get(), modelFighterHead_.get(), modelFighterL_arm_.get(),
-	    modelFighterR_arm_.get());
+	    modelFighterR_arm_.get()
+	};
+	// 自キャラの初期化
+	player_->Initialize(playerModels);
+
+	// 敵キャラの生成
+	enemy_ = std::make_unique<Enemy>();
+	std::vector<Model*> enemyModels = {
+	    modelNeedleBody_.get(), modelNeedleL_arm_.get(), modelNeedleR_arm_.get(),
+	};
+	
+	// 敵キャラの初期化
+	enemy_->Initialize(enemyModels);
+
 
 	// 天球の生成
 	skydome_ = std::make_unique<Skydome>();
@@ -59,6 +80,9 @@ void GameScene::Update() {
 
 	// プレイヤーの更新
 	player_->Update();
+
+	// 敵の更新
+	enemy_->Update();
 
 	// 追従カメラの更新
 	followCamera_->Update();
@@ -133,6 +157,9 @@ void GameScene::Draw() {
 	// 自キャラの描画
 	player_->Draw(viewProjection_);
 	
+	// 敵キャラの描画
+	enemy_->Draw(viewProjection_);
+
 	/// </summary>
 
 	// 3Dオブジェクト描画後処理

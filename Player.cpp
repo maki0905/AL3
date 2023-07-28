@@ -24,35 +24,28 @@
 //	InitializeFloatingGimmick();
 //}
 
-void Player::Initialize(Model* modeBody, Model* modelHead, Model* modelL_arm, Model* modelR_arm) {
-	assert(modeBody);
-	assert(modelHead);
-	assert(modelL_arm);
-	assert(modelR_arm);
-
-	modelBody_ = modeBody;
-	modelHead_ = modelHead;
-	modelL_arm_ = modelL_arm;
-	modelR_arm_ = modelR_arm;
-	
-	worldTransformBase_.Initialize();
-	worldTransformBody_.Initialize();
-	worldTransformHead_.Initialize();
-	worldTransformL_arm_.Initialize();
-	worldTransformR_arm_.Initialize();
-
-	worldTransformBase_.translation_.y = 2.0f;
-	worldTransformHead_.translation_.y = 4.4f;
-	worldTransformL_arm_.translation_ = Vector3(-2.2f, 5.4f, 0.0f);
-	worldTransformR_arm_.translation_ = Vector3(2.2f, 5.4f, 0.0f);
+void Player::Initialize(const std::vector<Model*>& models) {
+	// 基底クラスの初期化
+	BaseCharacter::Initialize(models);
 
 	// シングルトンインスタンスを取得
 	input_ = Input::GetInstance();
 
 	InitializeFloatingGimmick();
+
+	worldTransform_.translation_.y = 2.0f;
+	worldTransformBody_.Initialize();
+	worldTransformHead_.Initialize();
+	worldTransformHead_.translation_.y = 4.4f;
+	worldTransformL_arm_.Initialize();
+	worldTransformL_arm_.translation_ = Vector3(-2.2f, 5.4f, 0.0f);
+	worldTransformR_arm_.Initialize();
+	worldTransformR_arm_.translation_ = Vector3(2.2f, 5.4f, 0.0f);
 }
 
-void Player::Update() {
+
+
+void Player::Update() { 
 	
 	// 押した方向で移動ベクトルを変更(左右)
 	if (input_->PushKey(DIK_LEFT)) {
@@ -61,7 +54,7 @@ void Player::Update() {
 
 		// 移動量
 		Vector3 move = {-1.0f, 0, 0};
-		
+
 		// 移動量に速さを反映
 		move = Multiply(speed, Normalize(move));
 
@@ -70,17 +63,15 @@ void Player::Update() {
 		move = Transform(move, rotate);
 
 		// Y軸周り角度(θy)
-		worldTransformBase_.rotation_.y = std::atan2(move.x, move.z);
+		worldTransform_.rotation_.y = std::atan2(move.x, move.z);
 
 		// 横軸方向の長さを求める
 		float lenghtXZ = Length(Vector3(move.x, 0.0f, move.z));
 		// X軸周りの角度(θx)
-		worldTransformBase_.rotation_.x = std::atan2(-move.y, lenghtXZ);
+		worldTransform_.rotation_.x = std::atan2(-move.y, lenghtXZ);
 
 		// 移動
-		worldTransformBase_.translation_ = Add(worldTransformBase_.translation_, move);
-
-
+		worldTransform_.translation_ = Add(worldTransform_.translation_, move);
 
 	} else if (input_->PushKey(DIK_RIGHT)) {
 		// 速さ
@@ -97,15 +88,15 @@ void Player::Update() {
 		move = Transform(move, rotate);
 
 		// Y軸周り角度(θy)
-		worldTransformBase_.rotation_.y = std::atan2(move.x, move.z);
+		worldTransform_.rotation_.y = std::atan2(move.x, move.z);
 
 		// 横軸方向の長さを求める
 		float lenghtXZ = Length(Vector3(move.x, 0.0f, move.z));
 		// X軸周りの角度(θx)
-		worldTransformBase_.rotation_.x = std::atan2(-move.y, lenghtXZ);
+		worldTransform_.rotation_.x = std::atan2(-move.y, lenghtXZ);
 
 		// 移動
-		worldTransformBase_.translation_ = Add(worldTransformBase_.translation_, move);
+		worldTransform_.translation_ = Add(worldTransform_.translation_, move);
 	}
 
 	// 押した方向で移動ベクトルを変更(前後)
@@ -124,15 +115,15 @@ void Player::Update() {
 		move = Transform(move, rotate);
 
 		// Y軸周り角度(θy)
-		worldTransformBase_.rotation_.y = std::atan2(move.x, move.z);
+		worldTransform_.rotation_.y = std::atan2(move.x, move.z);
 
 		// 横軸方向の長さを求める
 		float lenghtXZ = Length(Vector3(move.x, 0.0f, move.z));
 		// X軸周りの角度(θx)
-		worldTransformBase_.rotation_.x = std::atan2(-move.y, lenghtXZ);
+		worldTransform_.rotation_.x = std::atan2(-move.y, lenghtXZ);
 
 		// 移動
-		worldTransformBase_.translation_ = Add(worldTransformBase_.translation_, move);
+		worldTransform_.translation_ = Add(worldTransform_.translation_, move);
 	} else if (input_->PushKey(DIK_DOWN)) {
 		// 速さ
 		const float speed = 0.3f;
@@ -148,15 +139,15 @@ void Player::Update() {
 		move = Transform(move, rotate);
 
 		// Y軸周り角度(θy)
-		worldTransformBase_.rotation_.y = std::atan2(move.x, move.z);
+		worldTransform_.rotation_.y = std::atan2(move.x, move.z);
 
 		// 横軸方向の長さを求める
 		float lenghtXZ = Length(Vector3(move.x, 0.0f, move.z));
 		// X軸周りの角度(θx)
-		worldTransformBase_.rotation_.x = std::atan2(-move.y, lenghtXZ);
+		worldTransform_.rotation_.x = std::atan2(-move.y, lenghtXZ);
 
 		// 移動
-		worldTransformBase_.translation_ = Add(worldTransformBase_.translation_, move);
+		worldTransform_.translation_ = Add(worldTransform_.translation_, move);
 	}
 
 	// ゲームパッドの状態を得る変数(XINPUT)
@@ -173,27 +164,32 @@ void Player::Update() {
 		move = Multiply(speed, Normalize(move));
 
 		// 移動
-		worldTransformBase_.translation_ = Add(worldTransformBase_.translation_, move);
-
+		worldTransform_.translation_ = Add(worldTransform_.translation_, move);
 	}
 
 	UpdateFloatingGimmick();
 	Matrix4x4 worldMatrix = MakeAffineMatrix(
-	    worldTransformBody_.scale_, worldTransformBody_.rotation_, worldTransformBody_.translation_);
-	worldTransformBody_.matWorld_ = Multiply(worldMatrix, worldTransformBase_.matWorld_);
+	    worldTransformBody_.scale_, worldTransformBody_.rotation_,
+	    worldTransformBody_.translation_);
+	worldTransformBody_.matWorld_ = Multiply(worldMatrix, worldTransform_.matWorld_);
 	worldMatrix = MakeAffineMatrix(
-	    worldTransformHead_.scale_, worldTransformHead_.rotation_, worldTransformHead_.translation_);
+	    worldTransformHead_.scale_, worldTransformHead_.rotation_,
+	    worldTransformHead_.translation_);
 
 	worldTransformHead_.matWorld_ = Multiply(worldMatrix, worldTransformBody_.matWorld_);
 	worldMatrix = MakeAffineMatrix(
-	    worldTransformL_arm_.scale_, worldTransformL_arm_.rotation_, worldTransformL_arm_.translation_);
+	    worldTransformL_arm_.scale_, worldTransformL_arm_.rotation_,
+	    worldTransformL_arm_.translation_);
 	worldTransformL_arm_.matWorld_ = Multiply(worldMatrix, worldTransformBody_.matWorld_);
 	worldMatrix = MakeAffineMatrix(
-	    worldTransformR_arm_.scale_, worldTransformR_arm_.rotation_, worldTransformR_arm_.translation_);
+	    worldTransformR_arm_.scale_, worldTransformR_arm_.rotation_,
+	    worldTransformR_arm_.translation_);
 	worldTransformR_arm_.matWorld_ = Multiply(worldMatrix, worldTransformBody_.matWorld_);
 
 	// 　行列を更新
-	worldTransformBase_.UpdateMatrix();
+	worldTransform_.matWorld_ = MakeAffineMatrix(
+	    worldTransform_.scale_, worldTransform_.rotation_, worldTransform_.translation_);
+	BaseCharacter::Update();
 	worldTransformBody_.TransferMatrix();
 	worldTransformHead_.TransferMatrix();
 	worldTransformL_arm_.TransferMatrix();
@@ -201,10 +197,10 @@ void Player::Update() {
 }
 
 void Player::Draw(ViewProjection& viewProjection) { 
-	modelBody_->Draw(worldTransformBody_, viewProjection);
-	modelHead_->Draw(worldTransformHead_, viewProjection);
-	modelL_arm_->Draw(worldTransformL_arm_, viewProjection);
-	modelR_arm_->Draw(worldTransformR_arm_, viewProjection);
+	models_[0]->Draw(worldTransformBody_, viewProjection);
+	models_[1]->Draw(worldTransformHead_, viewProjection);
+	models_[2]->Draw(worldTransformL_arm_, viewProjection);
+	models_[3]->Draw(worldTransformR_arm_, viewProjection);
 }
 
 void Player::InitializeFloatingGimmick() { 
