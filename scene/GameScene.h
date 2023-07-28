@@ -62,11 +62,14 @@ private: // メンバ変数
 	std::unique_ptr<Model> modelSkydome_ = nullptr;
 	std::unique_ptr<Model> modelGround_ = nullptr;
 	//std::vector<Model> modelFighter_;
+	// プレイヤー
 	std::unique_ptr<Model> modelFighterBody_;
 	std::unique_ptr<Model> modelFighterHead_;
 	std::unique_ptr<Model> modelFighterL_arm_;
 	std::unique_ptr<Model> modelFighterR_arm_;
+	std::unique_ptr<Model> modelWeapon_;
 
+	// 敵
 	std::unique_ptr<Model> modelNeedleBody_;
 	std::unique_ptr<Model> modelNeedleL_arm_;
 	std::unique_ptr<Model> modelNeedleR_arm_;
