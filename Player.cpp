@@ -6,6 +6,8 @@
 #include <math.h>
 #include "ImGuiManager.h"
 
+#include "GlobalVariables.h"
+
 //void Player::Initialize(std::vector<Model*> model) {
 //	for (Model* model : model) {
 //		assert(model);
@@ -45,6 +47,14 @@ void Player::Initialize(const std::vector<Model*>& models) {
 	worldTransformWeapon_.translation_.y = -1.0f;
 
 	BehaviorAttackInitialize();
+
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	const char* groupName = "Player";
+	// グループを追加
+	GlobalVariables::GetInstance()->CreateGroup(groupName);
+	globalVariables->SetValue(groupName, "Test", 90);
+	globalVariables->SetValue(groupName, "Test1", 90.0f);
+	globalVariables->SetValue(groupName, "Test2", {90.0f, 90.0f, 90.0f});
 }
 
 
