@@ -26,6 +26,11 @@ public:
 	/// </summary>
 	void Updata();
 
+	/// <summary>
+	/// ファイルに書き出し
+	/// </summary>
+	/// <param name="GroupName">グループ</param>
+	void SaveFile(const std::string& groupName);
 
 	// 値のセット(int)
 	void SetValue(const std::string& groupName, const std::string& key, int32_t value);
@@ -55,5 +60,8 @@ private:
 
 	// 全データ
 	std::map<std::string, Group> datas_;
+
+	// グローバル変数の保存先ファイルパス
+	const std::string kDirectoryPath = "Resources/GlobalVariables/";
 
 };

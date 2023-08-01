@@ -60,6 +60,7 @@ void Player::Initialize(const std::vector<Model*>& models) {
 
 
 void Player::Update() { 
+	
 	if (behaviorRequest_) {
 		// 振る舞いを変更する
 		behavior_ = behaviorRequest_.value();
@@ -90,7 +91,7 @@ void Player::Update() {
 		break;
 	}
 
-
+	
 	
 }
 
