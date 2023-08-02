@@ -62,6 +62,9 @@ public:
 	// 攻撃行動更新
 	void BehaviorAttackUpdate();
 
+	// 調整項目の適応
+	void ApplyGlobalVariables();
+
 private:
 	// ワールド変換データ
 	WorldTransform worldTransformBody_;
@@ -79,6 +82,8 @@ private:
 
 	// 浮遊ギミックの媒介変数
 	float floatingParameter_ = 0.0f;
+	float floatingCycle_ = 60.0f;
+	float floatingAmplitude_ = 2.0f;
 
 	// 攻撃ギミックの媒介変数
 	float attackParameter_ = 0.0f;

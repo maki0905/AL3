@@ -1,11 +1,29 @@
 {
     "Player": {
-        "Test": 90,
+        "ArmL Translation": [
+            -6.599999904632568,
+            5.400000095367432,
+            0.0
+        ],
+        "ArmR Translation": [
+            6.599999904632568,
+            5.400000095367432,
+            0.0
+        ],
+        "Head Translation": [
+            0.0,
+            4.400000095367432,
+            0.0
+        ],
+        "Test": 42,
         "Test1": 90.0,
         "Test2": [
             90.0,
             90.0,
             90.0
-        ]
+        ],
+        "Text": 90,
+        "floatingAmplitude": 2.0,
+        "floatingCycle": 60.0
     }
 }

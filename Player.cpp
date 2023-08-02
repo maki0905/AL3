@@ -52,9 +52,12 @@ void Player::Initialize(const std::vector<Model*>& models) {
 	const char* groupName = "Player";
 	// グループを追加
 	GlobalVariables::GetInstance()->CreateGroup(groupName);
-	globalVariables->SetValue(groupName, "Test", 90);
-	globalVariables->SetValue(groupName, "Test1", 90.0f);
-	globalVariables->SetValue(groupName, "Test2", {90.0f, 90.0f, 90.0f});
+	globalVariables->AddItem(groupName, "Head Translation", worldTransformHead_.translation_);
+	globalVariables->AddItem(groupName, "ArmL Translation", worldTransformL_arm_.translation_);
+	globalVariables->AddItem(groupName, "ArmR Translation", worldTransformR_arm_.translation_);
+	globalVariables->AddItem(groupName, "floatingCycle", floatingCycle_);
+	globalVariables->AddItem(groupName, "floatingAmplitude", floatingAmplitude_);
+
 }
 
 
@@ -91,7 +94,7 @@ void Player::Update() {
 		break;
 	}
 
-	
+	ApplyGlobalVariables();
 	
 }
 
@@ -132,8 +135,6 @@ void Player::UpdateFloatingGimmick() {
 	ImGui::SliderFloat3("Head Translation", &worldTransformHead_.translation_.x, -100.0f, 100.0f);
 	ImGui::SliderFloat3("ArmL Trasnlation", &worldTransformL_arm_.translation_.x, -100.0f, 100.0f);
 	ImGui::SliderFloat3("ArmR Trasnlation", &worldTransformR_arm_.translation_.x, -100.0f, 100.0f);
-	ImGui::SliderInt("周期", &period, 0, 120);
-	ImGui::SliderFloat("浮遊の振幅", &amplitude, -2.0f, 2.0f);
 	
 	ImGui::End();
 }
@@ -206,6 +207,21 @@ void Player::BehaviorAttackUpdate() {
 	
 
 	ImGui::End();
+}
+
+void Player::ApplyGlobalVariables() {
+	GlobalVariables* globalVariables = GlobalVariables::GetInstance();
+	const char* groupName = "Player";
+	worldTransformHead_.translation_ =
+	    globalVariables->GetVector3Value(groupName, "Head Translation");
+	worldTransformL_arm_.translation_ =
+	    globalVariables->GetVector3Value(groupName, "ArmL Translation");
+	worldTransformR_arm_.translation_ =
+	    globalVariables->GetVector3Value(groupName, "ArmR Translation");
+	floatingCycle_ = globalVariables->GetFloatValue(groupName, "floatingCycle");
+	floatingAmplitude_ = globalVariables->GetFloatValue(groupName, "floatingAmplitude");
+
+
 }
 
 void Player::BehaviorRootUpdate() {
